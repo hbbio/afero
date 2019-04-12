@@ -2,7 +2,7 @@
 
 A FileSystem Abstraction System for Go
 
-[![Build Status](https://travis-ci.org/spf13/afero.svg)](https://travis-ci.org/spf13/afero) [![Build status](https://ci.appveyor.com/api/projects/status/github/spf13/afero?branch=master&svg=true)](https://ci.appveyor.com/project/spf13/afero) [![GoDoc](https://godoc.org/github.com/spf13/afero?status.svg)](https://godoc.org/github.com/spf13/afero) [![Join the chat at https://gitter.im/spf13/afero](https://badges.gitter.im/Dev%20Chat.svg)](https://gitter.im/spf13/afero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/hbbio/afero.svg)](https://travis-ci.org/hbbio/afero) [![Build status](https://ci.appveyor.com/api/projects/status/github/hbbio/afero?branch=master&svg=true)](https://ci.appveyor.com/project/hbbio/afero) [![GoDoc](https://godoc.org/github.com/hbbio/afero?status.svg)](https://godoc.org/github.com/hbbio/afero) [![Join the chat at https://gitter.im/hbbio/afero](https://badges.gitter.im/Dev%20Chat.svg)](https://gitter.im/hbbio/afero?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 # Overview
 
@@ -23,17 +23,15 @@ package as it provides an additional abstraction that makes it easy to use a
 memory backed file system during testing. It also adds support for the http
 filesystem for full interoperability.
 
-
 ## Afero Features
 
-* A single consistent API for accessing a variety of filesystems
-* Interoperation between a variety of file system types
-* A set of interfaces to encourage and enforce interoperability between backends
-* An atomic cross platform memory backed file system
-* Support for compositional (union) file systems by combining multiple file systems acting as one
-* Specialized backends which modify existing filesystems (Read Only, Regexp filtered)
-* A set of utility functions ported from io, ioutil & hugo to be afero aware
-
+- A single consistent API for accessing a variety of filesystems
+- Interoperation between a variety of file system types
+- A set of interfaces to encourage and enforce interoperability between backends
+- An atomic cross platform memory backed file system
+- Support for compositional (union) file systems by combining multiple file systems acting as one
+- Specialized backends which modify existing filesystems (Read Only, Regexp filtered)
+- A set of utility functions ported from io, ioutil & hugo to be afero aware
 
 # Using Afero
 
@@ -41,25 +39,27 @@ Afero is easy to use and easier to adopt.
 
 A few different ways you could use Afero:
 
-* Use the interfaces alone to define you own file system.
-* Wrap for the OS packages.
-* Define different filesystems for different parts of your application.
-* Use Afero for mock filesystems while testing
+- Use the interfaces alone to define you own file system.
+- Wrap for the OS packages.
+- Define different filesystems for different parts of your application.
+- Use Afero for mock filesystems while testing
 
 ## Step 1: Install Afero
 
 First use go get to install the latest version of the library.
 
-    $ go get github.com/spf13/afero
+    $ go get github.com/hbbio/afero
 
 Next include Afero in your application.
+
 ```go
-import "github.com/spf13/afero"
+import "github.com/hbbio/afero"
 ```
 
 ## Step 2: Declare a backend
 
 First define a package variable and set it to a pointer to a filesystem.
+
 ```go
 var AppFs = afero.NewMemMapFs()
 
@@ -67,6 +67,7 @@ or
 
 var AppFs = afero.NewOsFs()
 ```
+
 It is important to note that if you repeat the composite literal you
 will be using a completely new and isolated filesystem. In the case of
 OsFs it will still use the same underlying filesystem but will reduce
@@ -78,20 +79,23 @@ Throughout your application use any function and method like you normally
 would.
 
 So if my application before had:
+
 ```go
 os.Open('/tmp/foo')
 ```
+
 We would replace it with:
+
 ```go
 AppFs.Open('/tmp/foo')
 ```
 
 `AppFs` being the variable we defined above.
 
-
 ## List of all available functions
 
 File System Methods Available:
+
 ```go
 Chmod(name string, mode os.FileMode) : error
 Chtimes(name string, atime time.Time, mtime time.Time) : error
@@ -106,7 +110,9 @@ RemoveAll(path string) : error
 Rename(oldname, newname string) : error
 Stat(name string) : os.FileInfo, error
 ```
+
 File Interfaces and Methods Available:
+
 ```go
 io.Closer
 io.Reader
@@ -123,6 +129,7 @@ Sync() : error
 Truncate(size int64) : error
 WriteString(s string) : ret int, err error
 ```
+
 In some applications it may make sense to define a new package that
 simply exports the file system variable for easy access from anywhere.
 
@@ -151,7 +158,8 @@ Walk(root string, walkFn filepath.WalkFunc) error
 WriteFile(filename string, data []byte, perm os.FileMode) error
 WriteReader(path string, r io.Reader) (err error)
 ```
-For a complete list see [Afero's GoDoc](https://godoc.org/github.com/spf13/afero)
+
+For a complete list see [Afero's GoDoc](https://godoc.org/github.com/hbbio/afero)
 
 They are available under two different approaches to use. You can either call
 them directly where the first parameter of each function will be the file
@@ -183,11 +191,11 @@ and the file access would be fast while also saving you from all the annoying
 issues with deleting temporary files, Windows file locking, etc. The MemMapFs
 backend is perfect for testing.
 
-* Much faster than performing I/O operations on disk
-* Avoid security issues and permissions
-* Far more control. 'rm -rf /' with confidence
-* Test setup is far more easier to do
-* No test cleanup needed
+- Much faster than performing I/O operations on disk
+- Avoid security issues and permissions
+- Far more control. 'rm -rf /' with confidence
+- Test setup is far more easier to do
+- No test cleanup needed
 
 One way to accomplish this is to define a variable as mentioned above.
 In your application this will be set to afero.NewOsFs() during testing you
@@ -199,6 +207,7 @@ appropriate in my application code. This approach ensures that Tests are order
 independent, with no test relying on the state left by an earlier test.
 
 Then in my tests I would initialize a new MemMapFs for each test:
+
 ```go
 func TestExist(t *testing.T) {
 	appFS := afero.NewMemMapFs()
@@ -373,16 +382,15 @@ overlay will be removed/renamed.
 In this example all write operations will only occur in memory (MemMapFs)
 leaving the base filesystem (OsFs) untouched.
 
-
 ## Desired/possible backends
 
 The following is a short list of possible backends we hope someone will
 implement:
 
-* SSH
-* ZIP
-* TAR
-* S3
+- SSH
+- ZIP
+- TAR
+- S3
 
 # About the project
 
@@ -406,28 +414,28 @@ Googles very well.
 
 ## Release Notes
 
-* **0.10.0** 2015.12.10
-  * Full compatibility with Windows
-  * Introduction of afero utilities
-  * Test suite rewritten to work cross platform
-  * Normalize paths for MemMapFs
-  * Adding Sync to the file interface
-  * **Breaking Change** Walk and ReadDir have changed parameter order
-  * Moving types used by MemMapFs to a subpackage
-  * General bugfixes and improvements
-* **0.9.0** 2015.11.05
-  * New Walk function similar to filepath.Walk
-  * MemMapFs.OpenFile handles O_CREATE, O_APPEND, O_TRUNC
-  * MemMapFs.Remove now really deletes the file
-  * InMemoryFile.Readdir and Readdirnames work correctly
-  * InMemoryFile functions lock it for concurrent access
-  * Test suite improvements
-* **0.8.0** 2014.10.28
-  * First public version
-  * Interfaces feel ready for people to build using
-  * Interfaces satisfy all known uses
-  * MemMapFs passes the majority of the OS test suite
-  * OsFs passes the majority of the OS test suite
+- **0.10.0** 2015.12.10
+  - Full compatibility with Windows
+  - Introduction of afero utilities
+  - Test suite rewritten to work cross platform
+  - Normalize paths for MemMapFs
+  - Adding Sync to the file interface
+  - **Breaking Change** Walk and ReadDir have changed parameter order
+  - Moving types used by MemMapFs to a subpackage
+  - General bugfixes and improvements
+- **0.9.0** 2015.11.05
+  - New Walk function similar to filepath.Walk
+  - MemMapFs.OpenFile handles O_CREATE, O_APPEND, O_TRUNC
+  - MemMapFs.Remove now really deletes the file
+  - InMemoryFile.Readdir and Readdirnames work correctly
+  - InMemoryFile functions lock it for concurrent access
+  - Test suite improvements
+- **0.8.0** 2014.10.28
+  - First public version
+  - Interfaces feel ready for people to build using
+  - Interfaces satisfy all known uses
+  - MemMapFs passes the majority of the OS test suite
+  - OsFs passes the majority of the OS test suite
 
 ## Contributing
 
@@ -441,12 +449,12 @@ Googles very well.
 
 Names in no particular order:
 
-* [spf13](https://github.com/spf13)
-* [jaqx0r](https://github.com/jaqx0r)
-* [mbertschler](https://github.com/mbertschler)
-* [xor-gate](https://github.com/xor-gate)
+- [spf13](https://github.com/spf13)
+- [jaqx0r](https://github.com/jaqx0r)
+- [mbertschler](https://github.com/mbertschler)
+- [xor-gate](https://github.com/xor-gate)
 
 ## License
 
 Afero is released under the Apache 2.0 license. See
-[LICENSE.txt](https://github.com/spf13/afero/blob/master/LICENSE.txt)
+[LICENSE.txt](https://github.com/hbbio/afero/blob/master/LICENSE.txt)
